@@ -1,0 +1,298 @@
+/* The rail overlaps the slides rather than sitting beside them, and is
+   transparent, so each slide's own background colour reads as a curtain
+   passing behind the labels. */
+.sections-group {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 100%;
+  background: var(--color-canvas-void);
+  color: var(--color-ink-onDark);
+}
+.sections-group > * {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.section-rail {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: var(--rail-sidebar-width);
+  z-index: 3;
+  margin: 0;
+  padding: 0 0 0 var(--rail-page-inset);
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  background: transparent;
+  pointer-events: none;
+}
+.section-rail li {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--type-body);
+  color: var(--ink-on-dark-faint);
+  transition: color var(--dur-tint) ease;
+}
+.section-rail li.is-active {
+  color: var(--color-ink-onDark);
+}
+.section-rail.is-on-light li {
+  color: var(--ink-on-light-faint);
+}
+.section-rail.is-on-light li.is-active {
+  color: var(--color-ink-onLight);
+}
+.section-dot {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity var(--dur-tint) ease;
+}
+.section-rail li.is-active .section-dot {
+  opacity: 1;
+}
+
+.section-slides {
+  width: 100%;
+}
+
+/* A tall scroll region, not a single viewport-height stop. Progress through
+   this taller area drives the reveal while the content stays pinned. */
+.section-slide {
+  position: relative;
+  width: 100%;
+  height: var(--scroll-slide-height);
+}
+
+/* Pure black rather than the section's near-black, so the knockout panel over
+   the video is indistinguishable from the slide around it. */
+.section-slide-video-fill {
+  background: var(--color-knockout-base);
+}
+
+/* Painted on the tall, non-sticky block, so scrolling the slide into view
+   covers the dark background like a curtain with no crossfade needed. */
+.section-slide-light {
+  background: var(--color-canvas-mint);
+  color: var(--color-ink-onLight);
+}
+.section-slide-light .section-subtitle {
+  color: var(--ink-on-light-muted);
+}
+
+.section-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 0 10% 0 var(--rail-sidebar-gutter);
+  box-sizing: border-box;
+}
+.section-sticky-centered {
+  justify-content: center;
+  padding-left: var(--rail-sidebar-gutter);
+  padding-right: var(--rail-page-inset);
+}
+
+.section-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 720px;
+}
+.section-content-wide {
+  max-width: 100%;
+  align-items: center;
+  margin: 0 auto;
+  text-align: center;
+}
+.section-content-video {
+  max-width: 1100px;
+  width: 100%;
+  align-items: center;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.section-video-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  margin-top: -10vh;
+}
+.section-video-frame {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  margin: 0 auto;
+  border: 1px solid var(--hairline-on-light);
+}
+.section-video-frame.is-empty {
+  background: repeating-linear-gradient(
+    135deg,
+    rgb(17 17 17 / 0.05) 0 12px,
+    rgb(17 17 17 / 0.02) 12px 24px
+  );
+}
+.section-video-frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.section-video-title-box {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 20px;
+}
+/* viewBox is set in pixel units from a ResizeObserver, so one user unit is one
+   pixel and getTotalLength returns a real perimeter. */
+.section-video-title-stroke {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.section-video-title-stroke rect {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+
+.section-title {
+  margin: 0;
+  font-size: var(--type-title);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.section-video-title {
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--type-mono);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: currentColor;
+  animation: glitch-jitter var(--dur-glitch-cycle) infinite steps(1);
+}
+
+/* RGB split: two colour-shifted copies read the same string from data-text and
+   jitter in and out on a short cycle, layered under the real text. */
+.section-video-title::before,
+.section-video-title::after {
+  content: attr(data-text);
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  overflow: hidden;
+  clip-path: inset(0 0 0 0);
+}
+.section-video-title::before {
+  color: var(--color-signal-magenta);
+  animation: glitch-slice-a var(--dur-glitch-cycle) infinite steps(1);
+}
+.section-video-title::after {
+  color: var(--color-signal-cyan);
+  animation: glitch-slice-b var(--dur-glitch-cycle) infinite steps(1);
+}
+
+@keyframes glitch-jitter {
+  0%, 92%, 100% { transform: translate(0, 0); }
+  93% { transform: translate(-1px, 0); }
+  95% { transform: translate(1px, 0); }
+  97% { transform: translate(-1px, 0); }
+}
+@keyframes glitch-slice-a {
+  0%, 92%, 100% { opacity: 0; transform: translate(0, 0); clip-path: inset(0 0 0 0); }
+  93% { opacity: 0.8; transform: translate(-2px, 1px); clip-path: inset(10% 0 60% 0); }
+  95% { opacity: 0.8; transform: translate(2px, -1px); clip-path: inset(55% 0 10% 0); }
+  97% { opacity: 0.8; transform: translate(-1px, 0); clip-path: inset(30% 0 40% 0); }
+}
+@keyframes glitch-slice-b {
+  0%, 92%, 100% { opacity: 0; transform: translate(0, 0); clip-path: inset(0 0 0 0); }
+  93% { opacity: 0.8; transform: translate(2px, -1px); clip-path: inset(60% 0 5% 0); }
+  95% { opacity: 0.8; transform: translate(-2px, 1px); clip-path: inset(15% 0 55% 0); }
+  97% { opacity: 0.8; transform: translate(1px, 0); clip-path: inset(45% 0 25% 0); }
+}
+
+/* The fill itself lives in VideoText. This is only the outer heading box, so
+   it stays a plain element with no background-clip trickery. */
+.section-title-video-fill {
+  font-size: var(--type-display);
+  white-space: nowrap;
+  text-align: center;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Stacked under the title in normal flow, centred with balanced breaks so the
+   paragraph tapers rather than wrapping into a block. */
+.section-subtitle {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  font-size: var(--type-body);
+  line-height: 1.7;
+  color: var(--ink-on-dark-muted);
+  max-width: 420px;
+  pointer-events: none;
+}
+.section-content-wide .section-subtitle {
+  max-width: 640px;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* Below this the sidebar gutter left almost nothing for content. */
+@media (max-width: 1024px) {
+  .section-rail {
+    display: none;
+  }
+  .section-sticky,
+  .section-sticky-centered {
+    padding: 0 32px;
+  }
+  .section-video-stack {
+    margin-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-video-title,
+  .section-video-title::before,
+  .section-video-title::after,
+  .section-rail li,
+  .section-dot {
+    animation: none !important;
+    transition: none !important;
+  }
+  .section-video-title::before,
+  .section-video-title::after {
+    opacity: 0;
+  }
+}

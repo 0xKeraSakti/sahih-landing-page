@@ -1,0 +1,15 @@
+.char {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+.word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Holds a real non-breaking space, so it sizes itself from the font and
+   survives copy/paste. A fixed-width empty span did neither. */
+.char-space {
+  display: inline-block;
+}

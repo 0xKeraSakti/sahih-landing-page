@@ -1,0 +1,149 @@
+.email-section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  color: var(--color-ink-onDark);
+  font-family: var(--font-serif-display);
+}
+.email-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgb(0 0 0 / 0.25) 0%,
+    rgb(0 0 0 / 0) 30%,
+    rgb(0 0 0 / 0.35) 100%
+  );
+}
+
+.email-curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  pointer-events: auto;
+  transition: clip-path 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: clip-path;
+}
+/* Both curtains are full-viewport-width and permanently stacked (right over
+   left, fixed in the markup) so their background images never resize — only
+   clip-path changes, which crops the fixed-size image rather than rescaling
+   it, so there's no zoom. The wipe is driven from the section, moving both
+   clip-paths together in one transition, so neither curtain's stacking order
+   ever has to change and there's nothing to snap.  */
+.email-curtain-left {
+  left: 0;
+  z-index: 1;
+  clip-path: inset(0 50% 0 0);
+}
+.email-curtain-right {
+  right: 0;
+  z-index: 0;
+  clip-path: inset(0 0 0 0);
+}
+.email-section:has(.email-curtain-left:hover) .email-curtain-left {
+  clip-path: inset(0 20% 0 0);
+}
+.email-section:has(.email-curtain-right:hover) .email-curtain-left {
+  clip-path: inset(0 80% 0 0);
+}
+.email-curtain-form {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: min(420px, 80%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  transition-delay: 0s;
+}
+.email-curtain:hover .email-curtain-form {
+  opacity: 1;
+  transition-delay: 0.25s;
+}
+.email-curtain-label {
+  margin: 0;
+  color: var(--color-ink-onDark);
+  font-family: var(--font-serif-display);
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  letter-spacing: 0.02em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .email-curtain {
+    transition: none;
+  }
+  .email-curtain-form {
+    transition: none;
+  }
+}
+
+@media (hover: none) {
+  .email-curtain-left {
+    clip-path: inset(0 50% 0 0);
+  }
+  .email-curtain-form {
+    opacity: 1;
+  }
+}
+
+.email-form-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  width: 100%;
+  border-bottom: 1px solid var(--hairline-on-dark);
+  padding-bottom: 10px;
+}
+.email-form-row input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-ink-onDark);
+  font-family: inherit;
+  font-size: 16px;
+}
+.email-form-row input:focus-visible {
+  outline: 2px solid var(--color-ink-onDark);
+  outline-offset: 4px;
+}
+.email-form-row input::placeholder {
+  color: var(--ink-on-dark-muted);
+}
+.email-form-row button {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: var(--color-ink-onDark);
+  cursor: pointer;
+}
+.email-form-row button svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.email-form-success {
+  margin: 0;
+  font-size: var(--type-lead);
+  text-align: center;
+}

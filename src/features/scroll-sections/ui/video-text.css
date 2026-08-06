@@ -1,0 +1,58 @@
+.video-text {
+  position: relative;
+  /* Confines the blend to this box. Without it the knockout would multiply
+     against everything painted behind it on the page. */
+  isolation: isolate;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto;
+  /* Seen only in the sliver of time before the video paints, and by browsers
+     that fail the @supports check below. */
+  background: var(--color-knockout-base);
+}
+
+/* Sits behind the knockout and fills the type's own bounding box. The knockout
+   is the element in flow, so it is what decides how large that box is. */
+.video-text__media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.video-text__knockout {
+  position: relative;
+  z-index: 1;
+  mix-blend-mode: multiply;
+  background: var(--color-knockout-base);
+  color: var(--color-ink-onDark);
+  font-size: var(--type-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  white-space: nowrap;
+  text-align: center;
+  /* Padding grows the knockout's own box past the tight glyph bounds on every
+     side, so it (and the video wrapper, which is sized off it) is always
+     larger than the video needs to be. Negative margin cancels the padding's
+     effect on layout/centering so it only adds bleed, not visible gap. */
+  padding: 0.15em 0.1em;
+  margin: -0.15em -0.1em;
+  /* Blended layers drop subpixel antialiasing anyway, so ask for the grayscale
+     path explicitly and get a consistent weight across platforms. */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Every current browser supports mix-blend-mode. This is cheap insurance:
+   drop the video, keep legible type. */
+@supports not (mix-blend-mode: multiply) {
+  .video-text__media {
+    display: none;
+  }
+  .video-text__knockout {
+    mix-blend-mode: normal;
+    background: transparent;
+  }
+}
