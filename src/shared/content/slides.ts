@@ -11,19 +11,19 @@ export interface Slide {
  */
 export const SLIDES: readonly Slide[] = [
   {
-    url: 'https://images.unsplash.com/photo-1560972550-aba3456b5564?w=1600&q=80',
+    url: '/umkm1.jpg',
     title: 'Invest in real businesses',
     caption:
       'Verified in real time, a sharia-compliant platform connecting everyday investors with growing small-medium businesses. Every transaction is traced back to its source, cross-checked against real activity, and recorded in a way that cannot be altered after the fact, so what you see is exactly what happened.',
   },
   {
-    url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=1600&q=80',
+    url: '/umkm2.jpg',
     title: 'Verified, not self-reported',
     caption:
       'Revenue is pulled from real transaction sources and cross-checked, then recorded in a way that cannot be altered after the fact.',
   },
   {
-    url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1600&q=80',
+    url: '/umkm3.jpg',
     title: 'Profit shared automatically',
     caption:
       'Distributions are triggered by verified performance each cycle, not by fixed interest that erodes margin.',

@@ -20,6 +20,23 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  /* Where a glyph is painted the result is the video untouched, so grading
+     the video is the only way to brighten the type. Recolouring the knockout
+     text cannot help: it is already white, the maximum multiply allows. */
+  filter: var(--video-fill-grade);
+}
+
+/* Luminance floor, painted above the video and below the knockout so multiply
+   reads it as part of the backdrop. Without it a dark passage in the footage
+   drops the glyphs to roughly the luminance of the black panel around them and
+   the title disappears. The surround is unaffected: black x anything is black,
+   so the panel still collapses cleanly into the slide. */
+.video-text::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--video-fill-floor);
+  pointer-events: none;
 }
 
 .video-text__knockout {
@@ -48,7 +65,8 @@
 /* Every current browser supports mix-blend-mode. This is cheap insurance:
    drop the video, keep legible type. */
 @supports not (mix-blend-mode: multiply) {
-  .video-text__media {
+  .video-text__media,
+  .video-text::after {
     display: none;
   }
   .video-text__knockout {

@@ -46,24 +46,59 @@
   position: absolute;
 }
 
+/* Fixed rather than absolute inside the hero: the bar has to outlive the
+   section it is authored in. `.hero` sets overflow: hidden but no transform or
+   filter, so it never becomes a containing block and the fixed bar is not
+   clipped by it.
+   The z-index has to clear both the dropped physics characters
+   (zIndex.fallingChar, 999) and the footer (1000), since a fixed header
+   crosses over everything on the page. */
 .pill-nav {
-  position: absolute;
+  position: fixed;
   top: 22px;
   left: var(--rail-nav-inset);
   right: var(--rail-nav-inset);
-  z-index: 10;
+  z-index: 1001;
   margin: 0 auto;
   box-sizing: border-box;
-  display: flex;
+  /* 1fr auto 1fr rather than space-between: the brand has to sit on the
+     centre line of the hero, and the two side groups are never the same
+     width. */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 20px;
   height: var(--rail-nav-height);
   padding: 0 32px;
   background: transparent;
+  border-radius: 999px;
   color: var(--color-ink-onDark);
   font-size: var(--type-ui);
   font-weight: 500;
+  transition:
+    top var(--dur-tint) ease,
+    left var(--dur-tint) ease,
+    right var(--dur-tint) ease,
+    border-radius var(--dur-tint) ease,
+    background-color var(--dur-tint) ease,
+    backdrop-filter var(--dur-tint) ease;
+}
+.pill-nav:hover {
+  background: var(--scrim-nav);
+  backdrop-filter: blur(12px);
+}
+
+/* Past the hero the bar spans the full width and squares off. The scrim is
+   permanent here rather than hover-only: the sections below include light
+   surfaces, and white labels floating on those with nothing behind them are
+   unreadable whether or not the pointer happens to be nearby. */
+.pill-nav.is-stuck {
+  top: 0;
+  left: 0;
+  right: 0;
+  border-radius: 0;
+  background: var(--scrim-nav-solid);
+  backdrop-filter: blur(12px);
 }
 .pill-nav a {
   color: inherit;
@@ -75,38 +110,111 @@
   border-radius: 4px;
 }
 .pill-nav-brand {
+  grid-column: 2;
+  justify-self: center;
   font-weight: 700;
-  letter-spacing: 0.14em;
-  font-size: 15px;
+  letter-spacing: 0.18em;
+  font-size: 20px;
+  white-space: nowrap;
+  transition: letter-spacing var(--dur-tint) ease;
 }
 .pill-nav-links {
+  grid-column: 1;
   display: flex;
+  align-items: center;
   gap: 28px;
   opacity: 0.9;
 }
-.pill-nav-cta {
+
+/* The nav owns its own hover treatment, since the hero's iris is suppressed
+   while the pointer is over it. Hovering the row drops every link back and
+   brings the one under the pointer forward, so the set reads as a group
+   responding rather than a single link lighting up. */
+.pill-nav-links a {
+  position: relative;
+  padding-bottom: 2px;
+  transition: opacity var(--dur-tint) ease;
+}
+.pill-nav-links:hover a {
+  opacity: 0.5;
+}
+.pill-nav-links a:hover {
+  opacity: 1;
+}
+/* Wipes in from the left and out to the right, so the underline travels with
+   the pointer instead of collapsing back the way it came. */
+.pill-nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-tint) cubic-bezier(0.65, 0, 0.35, 1);
+}
+.pill-nav-links a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.pill-nav-brand:hover {
+  letter-spacing: 0.24em;
+}
+.pill-nav-actions {
+  grid-column: 3;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+/* Qualified with `a`: `.pill-nav a { color: inherit }` is the more specific
+   selector, so an unqualified `.pill-nav-cta` lost the colour fight and the
+   label inherited white onto the white pill — a blank capsule. */
+.pill-nav a.pill-nav-cta {
   background: var(--color-ink-onDark);
   color: var(--color-ink-onLight);
-  padding: 9px 18px;
+  padding: 8px 18px;
+  border: 1px solid var(--color-ink-onDark);
   border-radius: 999px;
   font-weight: 600;
   white-space: nowrap;
+  transition:
+    background-color var(--dur-tint) ease,
+    color var(--dur-tint) ease;
+}
+.pill-nav a.pill-nav-cta:hover {
+  background: transparent;
+  color: var(--color-ink-onDark);
 }
 
+/* Full-bleed band rather than a left-anchored block: the two halves of the
+   title are pushed to opposite edges, so the headline has to span the hero
+   even though neither line does on its own. */
 .hero-headline {
   position: absolute;
-  left: 5%;
-  bottom: 8%;
+  left: 0;
+  right: 0;
+  bottom: var(--hero-headline-drop);
   margin: 0;
+  padding: 0 var(--hero-headline-inset);
+  box-sizing: border-box;
   color: var(--color-ink-onDark);
   font-size: var(--type-hero);
-  font-weight: 600;
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-  max-width: 70%;
+  font-weight: 500;
+  line-height: 0.88;
+  letter-spacing: -0.035em;
   text-shadow: 0 4px 40px rgb(0 0 0 / 0.45);
   pointer-events: none;
   z-index: 5;
+}
+.hero-headline .line-lead {
+  text-align: left;
+}
+.hero-headline .line-trail {
+  text-align: right;
 }
 
 .hero-cursor {
@@ -128,26 +236,14 @@
   display: block;
 }
 
-.hero-caption {
-  position: absolute;
-  top: 50%;
-  z-index: 7;
-  margin: 0;
-  color: var(--color-ink-onDark);
-  font-size: var(--type-body);
-  font-weight: 600;
-  line-height: 1.35;
-  max-width: 220px;
-  opacity: 0;
-  pointer-events: none;
-}
-.hero-caption-right {
-  right: var(--hero-caption-offset);
-  left: auto;
-}
-.hero-caption-left {
-  left: var(--hero-caption-offset);
-  right: auto;
+@media (prefers-reduced-motion: reduce) {
+  .pill-nav,
+  .pill-nav-links a,
+  .pill-nav-links a::after,
+  .pill-nav-brand,
+  .pill-nav a.pill-nav-cta {
+    transition: none;
+  }
 }
 
 .hero-tap-zones {
@@ -185,9 +281,9 @@
     display: none;
   }
   .hero-headline {
-    max-width: 90%;
-  }
-  .hero-caption {
-    display: none;
+    /* The longest line has to clear the edges at a size the viewport can no
+       longer pay for with 10vw, so trade inset for room. */
+    --hero-headline-inset: 20px;
+    font-size: clamp(2rem, 8.5vw, 4rem);
   }
 }

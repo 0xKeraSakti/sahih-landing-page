@@ -21,16 +21,14 @@ export function HeroReveal({ slides }: HeroRevealProps) {
   const blobRef = useRef<SVGCircleElement | null>(null)
   const arrowRef = useRef<HTMLDivElement | null>(null)
   const headlineRef = useRef<HTMLSpanElement | null>(null)
-  const captionRef = useRef<HTMLParagraphElement | null>(null)
 
   const reduced = usePrefersReducedMotion()
 
-  // Slide index is React state so the headline and caption render
-  // declaratively. The previous build rewrote the headline with innerHTML
-  // through a second, subtly different splitter, so the hero text visibly
-  // changed shape the first time a slide advanced.
+  // Slide index is React state so the headline renders declaratively. The
+  // previous build rewrote the headline with innerHTML through a second,
+  // subtly different splitter, so the hero text visibly changed shape the
+  // first time a slide advanced.
   const [index, setIndex] = useState(0)
-  const [captionSide, setCaptionSide] = useState<'left' | 'right'>('right')
   const [hasAdvanced, setHasAdvanced] = useState(false)
 
   const refs = useMemo(
@@ -45,8 +43,7 @@ export function HeroReveal({ slides }: HeroRevealProps) {
     []
   )
 
-  const handleAdvance = useCallback((nextIndex: number, goingRight: boolean) => {
-    setCaptionSide(goingRight ? 'right' : 'left')
+  const handleAdvance = useCallback((nextIndex: number) => {
     setHasAdvanced(true)
     setIndex(nextIndex)
   }, [])
@@ -79,32 +76,6 @@ export function HeroReveal({ slides }: HeroRevealProps) {
     }
   }, [index, hasAdvanced, reduced])
 
-  useLayoutEffect(() => {
-    const caption = captionRef.current
-    if (!caption || !hasAdvanced) return
-
-    if (reduced) {
-      gsap.set(caption, { opacity: 1, y: '-50%' })
-      return
-    }
-
-    const tween = gsap.fromTo(
-      caption,
-      { opacity: 0, y: '-40%' },
-      {
-        opacity: 1,
-        y: '-50%',
-        duration: duration.captionIn,
-        delay: duration.captionDelay,
-        ease: ease.out,
-      }
-    )
-
-    return () => {
-      tween.kill()
-    }
-  }, [index, captionSide, hasAdvanced, reduced])
-
   const slide = slides[index]
 
   return (
@@ -119,10 +90,10 @@ export function HeroReveal({ slides }: HeroRevealProps) {
       <div className="hero-slide hero-slide-base" ref={baseSlideRef} />
       <div className="hero-slide hero-slide-front" ref={frontSlideRef} />
 
-      <HeroNav />
+      <HeroNav heroRef={heroRef} />
 
       <h1 className="hero-headline" key={index}>
-        <SplitText text={slide.title} mode="chars" ref={headlineRef} />
+        <SplitText text={slide.title} mode="lines" ref={headlineRef} />
       </h1>
 
       <div className="hero-cursor" ref={arrowRef} aria-hidden="true">
@@ -136,14 +107,6 @@ export function HeroReveal({ slides }: HeroRevealProps) {
           />
         </svg>
       </div>
-
-      <p
-        className={`hero-caption hero-caption-${captionSide}`}
-        ref={captionRef}
-        aria-live="polite"
-      >
-        {hasAdvanced ? slide.caption : ''}
-      </p>
 
       {/* Mask cut into the base layer: a circle that reveals the front layer. */}
       <svg width="0" height="0" className="hero-mask-defs" aria-hidden="true">

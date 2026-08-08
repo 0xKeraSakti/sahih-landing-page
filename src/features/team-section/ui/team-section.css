@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* The source component owns a whole document and resets with a bare `*`.
+   Dropped into this page that would restyle the hero and every section, so
+   the reset is re-targeted at the section's own subtree. It has to come
+   first: `.team *` and `.img` carry the same specificity, so the later rule
+   is the one that keeps the tile's padding. */
+.team *,
+.team *::before,
+.team *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.team img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.team {
+  position: relative;
+  /* 100% rather than 100vw: inside the scroll container a viewport width
+     would clear the vertical scrollbar and force a horizontal one. */
+  width: 100%;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2.5em;
+  overflow: hidden;
+  background-color: #0f0f0f;
+  color: #e3e3db;
+}
+
+.profile-images {
+  width: max-content;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* The padding is the gutter between tiles, so animating width/height grows
+   the thumbnail in place and pushes its siblings apart. */
+.img {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  padding: 5px;
+  cursor: pointer;
+  will-change: width, height;
+}
+
+.img img {
+  border-radius: 0.5rem;
+  filter: grayscale(1);
+}
+
+.profile-names {
+  width: 100%;
+  height: 15rem;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+}
+
+/* Every heading is absolutely stacked in the same spot and parked one full
+   line below the mask. The h1 itself is never animated — only the letters
+   inside it, whose transforms add to this one. */
+.name h1 {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  text-transform: uppercase;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15rem;
+  font-weight: 900;
+  letter-spacing: -0.2rem;
+  line-height: 1;
+  color: #f93535;
+  user-select: none;
+  transform: translateY(100%);
+}
+
+/* Mirrored: the group title is parked one line above, so letters at y:100%
+   net to zero and it reads as visible on load. */
+.name.default h1 {
+  color: #e3e3db;
+  transform: translateY(-100%);
+}
+
+.name h1 .letter {
+  position: relative;
+  transform: translateY(0%);
+  will-change: transform;
+}
+
+@media (max-width: 900px) {
+  .team {
+    flex-direction: column-reverse;
+  }
+  .profile-images {
+    flex-wrap: wrap;
+    max-width: 90%;
+  }
+  .img {
+    width: 60px;
+    height: 60px;
+    padding: 2.5px;
+  }
+  .profile-names {
+    height: 4rem;
+  }
+  .name h1 {
+    font-size: 4rem;
+    letter-spacing: 0;
+  }
+}

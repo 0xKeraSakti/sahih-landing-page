@@ -131,6 +131,8 @@ export const zIndex = {
   cursor: 6,
   caption: 7,
   touchNav: 8,
-  nav: 10,
   fallingChar: 999,
+  footer: 1000,
+  /** Fixed header, so it has to clear everything it scrolls over. */
+  nav: 1001,
 } as const

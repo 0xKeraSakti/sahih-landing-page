@@ -34,23 +34,36 @@
   --hairline-on-dark: rgb(255 255 255 / 0.5);
   --hairline-on-light: rgb(17 17 17 / 0.12);
 
+  --video-fill-grade: brightness(1.85) contrast(0.92) saturate(1.25);
+  --video-fill-floor: rgb(255 255 255 / 0.2);
+
+  /* Scrim the nav pulls up on hover. The hero slides run from near-black to
+     bright sky, so white nav text has no guaranteed contrast on its own. */
+  --scrim-nav: rgb(0 0 0 / 0.4);
+  /* Heavier, because past the hero the bar is permanent and has to hold white
+     labels over the light sections too. */
+  --scrim-nav-solid: rgb(12 12 12 / 0.82);
+
   /* Layout rails */
   --rail-sidebar-width: 320px;
   --rail-sidebar-gutter: 380px;
   --rail-page-inset: 60px;
   --rail-nav-inset: 40px;
-  --rail-nav-height: 56px;
+  --rail-nav-height: 72px;
 
   /* Scroll geometry. Each section slide is a tall scroll region whose
      content is pinned; this is how much scroll one slide consumes. */
   --scroll-slide-height: 220vh;
 
-  /* Hero caption sits just outside the centre column. */
-  --hero-caption-offset: calc(56vw + 32px);
   --hero-cursor-size: 34px;
 
+  /* The headline's two lines are pushed to opposite edges of the hero, so
+     these set how far in from the edge and how far off the floor they sit. */
+  --hero-headline-inset: 4vw;
+  --hero-headline-drop: 6vh;
+
   /* Type scale */
-  --type-hero: clamp(2.5rem, 7vw, 6.5rem);
+  --type-hero: clamp(2.5rem, 10vw, 9.5rem);
   --type-display: clamp(3rem, 6.4vw, 6.8rem);
   --type-title: clamp(2rem, 4.5vw, 3.75rem);
   --type-mono: clamp(1rem, 1.6vw, 1.35rem);

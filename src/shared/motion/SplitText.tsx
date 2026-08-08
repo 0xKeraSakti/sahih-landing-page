@@ -10,7 +10,7 @@ import './split-text.css'
  */
 const NBSP = '\u00A0'
 
-export type SplitMode = 'chars' | 'words'
+export type SplitMode = 'chars' | 'words' | 'lines'
 
 interface SplitTextProps {
   text: string
@@ -20,6 +20,9 @@ interface SplitTextProps {
    *
    * `words` keeps each word atomic so its characters can never be broken
    * across a line, with a sized spacer element between words.
+   *
+   * `lines` is `chars` plus a real element per line, so each line can be
+   * aligned independently. A `<br>` cannot be text-aligned on its own.
    */
   mode?: SplitMode
   className?: string
@@ -39,6 +42,45 @@ function renderChars(text: string) {
         </span>
       )
     )
+}
+
+/**
+ * Break at the space nearest the middle rather than the first one. Splitting
+ * "Invest in real businesses" at the first space leaves a one-word line above
+ * a three-word line, which reads as a mistake once the two halves are pushed
+ * to opposite edges.
+ */
+function balancedBreak(text: string) {
+  const middle = text.length / 2
+  let best = -1
+
+  for (let i = text.indexOf(' '); i !== -1; i = text.indexOf(' ', i + 1)) {
+    if (best === -1 || Math.abs(i - middle) < Math.abs(best - middle)) best = i
+  }
+
+  return best
+}
+
+function renderLine(text: string, key: string, className: string) {
+  return (
+    <span key={key} className={className}>
+      {text.split('').map((char, i) => (
+        <span key={i} className="char">
+          {char === ' ' ? NBSP : char}
+        </span>
+      ))}
+    </span>
+  )
+}
+
+function renderLines(text: string) {
+  const breakAt = balancedBreak(text)
+  if (breakAt === -1) return [renderLine(text, 'l-0', 'line line-lead')]
+
+  return [
+    renderLine(text.slice(0, breakAt), 'l-0', 'line line-lead'),
+    renderLine(text.slice(breakAt + 1), 'l-1', 'line line-trail'),
+  ]
 }
 
 function renderWords(text: string) {
@@ -79,7 +121,11 @@ export const SplitText = forwardRef<HTMLSpanElement, SplitTextProps>(
       <>
         <span className="sr-only">{text}</span>
         <span className={className} ref={ref} aria-hidden="true">
-          {mode === 'chars' ? renderChars(text) : renderWords(text)}
+          {mode === 'chars'
+            ? renderChars(text)
+            : mode === 'lines'
+              ? renderLines(text)
+              : renderWords(text)}
         </span>
       </>
     )

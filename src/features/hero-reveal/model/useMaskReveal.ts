@@ -150,11 +150,36 @@ export function useMaskReveal({
       }
     }
 
+    const closeReveal = () => {
+      switching.current = false
+      blobOpen.current = false
+      gsap.to([blob, arrow], { opacity: 0, duration: duration.blobClose, overwrite: 'auto' })
+      tweenRadius(0, { duration: duration.blobClose })
+    }
+
+    // Latched so crossing into the nav collapses the reveal once, rather than
+    // queueing a fresh close tween on every move while the pointer sits there.
+    let overNav = false
+
     const handlePointerMove = (event: PointerEvent) => {
       if (animating.current) return
       // Touch gets the tap zones instead; a coarse pointer cannot hover, so
       // tracking it here would leave the blob stranded wherever the finger lifted.
       if (event.pointerType === 'touch') return
+
+      // The nav sits inside the hero, so its pointer events bubble to here.
+      // The reveal collapses rather than tracks: the arrow points at a slide
+      // change that a click on the nav will not perform, and the nav has its
+      // own hover treatment that the iris would fight with. Moving back off
+      // the nav reopens it through the normal path below.
+      if ((event.target as Element | null)?.closest('.pill-nav')) {
+        if (!overNav) {
+          overNav = true
+          closeReveal()
+        }
+        return
+      }
+      overNav = false
 
       const { x, y, width } = localPoint(event)
       const goingRight = x > width / 2
@@ -216,11 +241,9 @@ export function useMaskReveal({
     }
 
     const handlePointerLeave = () => {
+      overNav = false
       if (revealed.current) return
-      switching.current = false
-      blobOpen.current = false
-      gsap.to([blob, arrow], { opacity: 0, duration: duration.blobClose, overwrite: 'auto' })
-      tweenRadius(0, { duration: duration.blobClose })
+      closeReveal()
     }
 
     const advance: Advance = (goingRight, originX, originY) => {

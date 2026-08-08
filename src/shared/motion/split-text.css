@@ -3,6 +3,14 @@
   will-change: transform, opacity;
 }
 
+/* Block so each line can carry its own text-align; nowrap so a line that
+   overflows bleeds off the edge instead of re-wrapping and breaking the
+   two-line composition it was split for. */
+.line {
+  display: block;
+  white-space: nowrap;
+}
+
 .word {
   display: inline-block;
   white-space: nowrap;

@@ -4,6 +4,8 @@ import { SLIDES } from '@/shared/content/slides'
 import { HeroReveal } from '@/features/hero-reveal'
 import { SectionPanel } from '@/features/scroll-sections'
 import { EmailSection } from '@/features/email-capture'
+import { TeamSection } from '@/features/team-section'
+import { SiteFooter } from '@/features/site-footer'
 
 /**
  * Owns the scroll container, since both the hero and the section panel need to
@@ -17,6 +19,8 @@ export function LandingPage() {
       <HeroReveal slides={SLIDES} />
       <SectionPanel sections={SLIDES} scrollContainerRef={scrollContainerRef} />
       <EmailSection />
+      <TeamSection />
+      <SiteFooter />
     </div>
   )
 }

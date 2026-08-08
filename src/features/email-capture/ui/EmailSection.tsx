@@ -2,8 +2,8 @@ import { useState, type FormEvent } from 'react'
 
 import './email-capture.css'
 
-const CURTAIN_LEFT_URL = 'https://images.unsplash.com/photo-1560972550-aba3456b5564?w=1920&q=80'
-const CURTAIN_RIGHT_URL = 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&q=80'
+const CURTAIN_LEFT_URL = '/investor_section.jpg'
+const CURTAIN_RIGHT_URL = '/umkm_section.jpg'
 
 interface AudienceFormProps {
   side: 'left' | 'right'
